@@ -75,7 +75,7 @@ function App() {
       {filtered.map((id)=>{
         return(
           <div className='' key={id.name}>
-            <img className='lg:w-60 w-full h-40' src={id.flag} alt="" />
+            <img className='lg:w-60 w-full lg:h-40' src={id.flags.png} alt="id.name" />
             <div className={`px-4 dark:shadow-blue-100! dark:shadow-sm!  w-full lg:w-60 my-[-1px] py-6 shadow-md`}>
             <h1 className='font-bold '>{id.name}</h1>
             <h1 className='text-sm font-bold'> Population: <span className='font-normal '>{id.population.toLocaleString()}</span></h1>
