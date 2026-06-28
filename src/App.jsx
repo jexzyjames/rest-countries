@@ -8,7 +8,7 @@ import { div } from 'framer-motion/client';
 function App() {
 
   const [dark, setDark]= useState(true);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const[ query, setQuery] = useState('')
   const[region, setRegion] = useState('Filter by Region')
   const [countries, setCountries] = useState([])
@@ -31,10 +31,10 @@ useEffect(() => {
     const { signal } = controller;
 
     const fetchCountries = async () => {
+      setLoading(true)
       try {
-        setLoading(true);
         const response = await fetch(BASE_URL, { signal });
-
+      setLoading(true)
         // Check if the HTTP status code is successful
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -42,6 +42,7 @@ useEffect(() => {
 
         const data = await response.json();
         setCountries(data);
+        setLoading(false);
         setError(null);
       } catch (err) {
         // Prevent throwing errors if the fetch request was intentionally aborted
@@ -109,14 +110,14 @@ useEffect(() => {
           <div className='mb-10' key={id.name}>
             {loading && Array(12).fill(0).map((_,index)=> {
               return(
-              <div className=" md:mx-20  mx-7   grid sm:grid-cols-1  md:grid-cols-1 justify-between lg:grid-cols-4 gap-5">
-                <Skeleton height={160} className='h-40 w- 80'  />
+              <div className=" md:mx-20  mx-7   grid sm:grid-cols-1  md:grid-cols-1 justify-between lg:grid-cols-3 gap-5">
+                <Skeleton height={160} className='h-40 w- 80 lg:w-120'  />
                 <div className=' mb-3  '>
 
-                <Skeleton width='95%' height={24} /> 
-                <Skeleton width='95%' height={24} /> 
-                <Skeleton width='95%' height={24} /> 
-                <Skeleton width='95%' height={24} /> 
+                <Skeleton width='100%' height={24} /> 
+                <Skeleton width='100%' height={24} /> 
+                <Skeleton width='100%' height={24} /> 
+                <Skeleton width='100%' height={24} /> 
                 </div>
               </div>
               )
@@ -136,7 +137,7 @@ useEffect(() => {
           </div>
         )
       })}
-      {filtered ==  ''  && (
+      { loading && filtered ===  ''  && (
 
         <div className='text-slate-900 p-4 dark:text-gray-100! dark:shadow-blue-200 dark:shadow-sm!   shadow-md '> <b className=' uppercase'>{query}</b> not found try another region </div>
        
