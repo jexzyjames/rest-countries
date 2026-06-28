@@ -8,12 +8,12 @@ import { div } from 'framer-motion/client';
 function App() {
 
   const [dark, setDark]= useState(true);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const[ query, setQuery] = useState('')
   const[region, setRegion] = useState('Filter by Region')
-  const [countries, setCountries] = useState(countryData || [])
-
-  const filtered = countries.filter(c => {
+  const [countries, setCountries] = useState([])
+ const [error, setError] = useState(null);
+  const filtered = countries?.filter(c => {
     const results = c.name.toLowerCase().includes(query.toLowerCase());
     const matchRegion = region === 'Filter by Region' ||  c.region === region;
     return results && matchRegion;
@@ -25,18 +25,45 @@ function App() {
     useEffect(()=>{},[dark ])
 
    const regions = ['Filter by Region', ...new Set(countries.map(c => c.region))]
-   const BASE_URL =  'https://www.github.io/jexzyjames/data.json';
-// useEffect(()=>{
-//     fetch('${BASE_URL}')
-//     .then(res => {
-//       if(!res.ok) throw new Error('Failed to fetch')
-//         const data = res.json;
-          // setCountries(data)
+   const BASE_URL =  'https://jexzyjames.github.io/json-api/countries.json';
+useEffect(() => {
+   const controller = new AbortController();
+    const { signal } = controller;
 
-//     })
-//    
+    const fetchCountries = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(BASE_URL, { signal });
 
-//   },[])  
+        // Check if the HTTP status code is successful
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setCountries(data);
+        setError(null);
+      } catch (err) {
+        // Prevent throwing errors if the fetch request was intentionally aborted
+        if (err.name !== 'AbortError') {
+          setError(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCountries();
+
+    // 3. Cleanup function runs if component unmounts or URL changes
+    return () => {
+      controller.abort();
+    };
+
+  }, [BASE_URL]);
+
+  if (error) return <p>Error loading countries: {error}</p>;
+
   return (
   <>
   <div className={` dark:fade    bg-white dark:bg-[hsl(207_26%_17%)]! min-h-screen  dark:text-gray-100 border-gray-700`}>
@@ -80,7 +107,7 @@ function App() {
       {filtered.map((id)=>{
         return(
           <div className='mb-10' key={id.name}>
-            {!loading && Array(12).fill(0).map((_,index)=> {
+            {loading && Array(12).fill(0).map((_,index)=> {
               return(
               <div className=" md:mx-20  mx-7   grid sm:grid-cols-1  md:grid-cols-1 justify-between lg:grid-cols-4 gap-5">
                 <Skeleton height={160} className='h-40 w- 80'  />
