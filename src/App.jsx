@@ -137,7 +137,7 @@ useEffect(() => {
           </div>
         )
       })}
-      { loading && filtered ===  ''  && (
+      { loading || filtered ===  ''  && (
 
         <div className='text-slate-900 p-4 dark:text-gray-100! dark:shadow-blue-200 dark:shadow-sm!   shadow-md '> <b className=' uppercase'>{query}</b> not found try another region </div>
        
